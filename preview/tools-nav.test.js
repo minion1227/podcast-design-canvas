@@ -38,6 +38,11 @@ const ingestFlow = new Set([
   "social-context-intake.html",
 ]);
 
+const publishFlow = new Set([
+  "export-package-handoff.html",
+  "publish-checklist.html",
+]);
+
 const prototypes = fs
   .readdirSync(path.join(root, "prototype"))
   .filter((name) => name.endsWith(".html"));
@@ -62,6 +67,15 @@ for (const file of prototypes) {
     assert.ok(
       !html.includes("../preview/tools-nav.js"),
       `ingest screen does not double up with tools nav: ${file}`,
+    );
+  } else if (publishFlow.has(file)) {
+    assert.ok(
+      html.includes("../preview/publish-nav.js"),
+      `publish screen uses publish navigation: ${file}`,
+    );
+    assert.ok(
+      !html.includes("../preview/tools-nav.js"),
+      `publish screen does not double up with tools nav: ${file}`,
     );
   } else {
     // Every secondary screen links back to the shell.
