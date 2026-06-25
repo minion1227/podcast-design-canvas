@@ -1182,7 +1182,14 @@ controller.applyLayout("interview");
 controller.placeVideoFile(controller.zonesBySlot.host, { name: "k-host.mp4", type: "video/mp4", size: 5, lastModified: 5 });
 const placedHostVideo = placedVideoIn("host");
 assert.equal(placedHostVideo.attributes.tabindex, "0", "a placed video is focusable for keyboard move");
-assert.ok((placedHostVideo.attributes["aria-keyshortcuts"] || "").includes("ArrowRight"), "the placed video advertises arrow-key move shortcuts");
+// aria-keyshortcuts must advertise every key the placed-video keydown handler acts on — the
+// arrows move/swap AND Delete/Backspace removes — matching the layout picker's same convention
+// below, so a screen-reader user is told the removal shortcut exists, not only the move keys.
+const placedShortcuts = placedHostVideo.attributes["aria-keyshortcuts"] || "";
+["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Backspace"].forEach((key) => {
+  assert.ok(placedShortcuts.includes(key), "the placed video advertises the " + key + " shortcut it handles");
+});
+assert.match(placedHostVideo.attributes["aria-label"] || "", /Delete to remove/, "the placed video's label names the Delete removal shortcut");
 // ArrowRight moves it into the next (empty) slot.
 fireKey(placedHostVideo, "ArrowRight");
 assert.equal(controller.zonesBySlot.guest.dataset.fileName, "k-host.mp4", "arrow key moves the placed video into the next slot");

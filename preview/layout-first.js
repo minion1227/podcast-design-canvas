@@ -681,13 +681,15 @@
         wrap.setAttribute("draggable", "true");
         // The drag-to-move/swap affordance is otherwise pointer-only and conveyed visually.
         // Make the placed video keyboard-operable too: focusable, with a drag role description
-        // and arrow-key shortcuts, so a keyboard / screen-reader user can move or swap it
-        // between slots instead of only dragging it with a mouse (WCAG 2.1.1).
+        // and key shortcuts, so a keyboard / screen-reader user can move, swap, or remove it
+        // instead of only dragging it with a mouse (WCAG 2.1.1). aria-keyshortcuts must advertise
+        // every key the keydown handler below acts on — the arrows move/swap AND Delete/Backspace
+        // removes — or a screen-reader user is never told the removal shortcut exists.
         wrap.setAttribute("role", "group");
         wrap.setAttribute("aria-roledescription", "Draggable video");
         wrap.setAttribute("tabindex", "0");
-        wrap.setAttribute("aria-keyshortcuts", "ArrowLeft ArrowRight ArrowUp ArrowDown");
-        wrap.setAttribute("aria-label", slotName(zone) + " video — drag, or focus and press the arrow keys, to move or swap it with another slot");
+        wrap.setAttribute("aria-keyshortcuts", "ArrowLeft ArrowRight ArrowUp ArrowDown Delete Backspace");
+        wrap.setAttribute("aria-label", slotName(zone) + " video — drag, or focus and press the arrow keys to move or swap it between slots, or Delete to remove it");
       }
       wrap.addEventListener("dragstart", (event) => {
         draggingFromSlot = zone.dataset.slot || null;
